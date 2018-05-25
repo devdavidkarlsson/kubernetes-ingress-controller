@@ -84,7 +84,7 @@ upstream:
       healthy:
       http_statuses:
         - 200
-        - 302
+        - 302gi
       interval: 0
       successes: 0
       http_path: "/mockbin"

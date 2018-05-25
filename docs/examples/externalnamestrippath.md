@@ -1,4 +1,4 @@
-# Expose an external application
+# Expose an external application with a path, that is stripped by KongIngress config.
 
 This example shows how we can expose a service located outside the Kubernetes cluster using an Ingress rule similar to the Kong [Getting Started guide](0)
 We then extend the example with a custom path on the ingress resource that will be stripped by kong before the request reaches the upstream.
@@ -43,7 +43,7 @@ config:
 " | kubectl create -f -
 ```
 
-3. Create an Ingress to expose the service in the host `foo.bar`.
+3. Create an Ingress to expose the service in the host `foo.bar`. With an annotation referencing the KongIngress.
 
 ```bash
 echo "
@@ -52,6 +52,7 @@ kind: Ingress
 metadata:
   name: proxy-from-k8s-to-mockbin
   annotations:
+    ingress.plugin.konghq.com: proxy-from-k8s-to-mockbin
     request-transformer.plugin.konghq.com: |
       transform-request-to-mockbin
 spec:
@@ -74,7 +75,6 @@ apiVersion: configuration.konghq.com/v1
 kind: KongIngress
 metadata:
   name: proxy-from-k8s-to-mockbin
-  namespace: kong-test
 upstream:
   hash_on: none
   hash_fallback: none
@@ -137,17 +137,17 @@ export PROXY_IP=$(minikube   service -n kong kong-proxy --url --format "{{ .IP }
 export HTTP_PORT=$(minikube  service -n kong kong-proxy --url --format "{{ .Port }}" | head -1)
 export HTTPS_PORT=$(minikube service -n kong kong-proxy --url --format "{{ .Port }}" | tail -1)
 
-http ${PROXY_IP}:${HTTP_PORT} Host:foo.bar
+curl ${PROXY_IP}:${HTTP_PORT}/mockbin -H "Host:foo.bar"
 
 ```
 
 6. What is configured in Kong?
 
 ```bash
-http ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/routes/
-http ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/services/
-http ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/upstreams/
-http ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/upstreams/default.proxy-to-mockbin.80/targets
+curl ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/routes/ |jq .
+curl ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/services/ |jq .
+curl ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/upstreams/ |jq .
+curl ${KONG_ADMIN_IP}:${KONG_ADMIN_PORT}/upstreams/default.proxy-to-mockbin.80/targets |jq .
 ```
 
 [0]: https://getkong.org/docs/0.13.x/getting-started/configuring-a-service/

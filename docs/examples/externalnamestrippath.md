@@ -84,10 +84,10 @@ upstream:
       healthy:
       http_statuses:
         - 200
-        - 302gi
+        - 302
       interval: 0
       successes: 0
-      http_path: "/mockbin"
+      http_path: /mockbin
       timeout: 1
       unhealthy:
         http_failures: 0

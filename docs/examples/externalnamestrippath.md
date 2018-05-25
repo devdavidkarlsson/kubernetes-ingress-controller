@@ -52,7 +52,7 @@ kind: Ingress
 metadata:
   name: proxy-from-k8s-to-mockbin
   annotations:
-    ingress.plugin.konghq.com: proxy-from-k8s-to-mockbin
+    ingress.plugin.konghq.com: proxy-from-k8s-to-mockbin-kongingress
     request-transformer.plugin.konghq.com: |
       transform-request-to-mockbin
 spec:
@@ -74,7 +74,7 @@ echo "
 apiVersion: configuration.konghq.com/v1
 kind: KongIngress
 metadata:
-  name: proxy-from-k8s-to-mockbin
+  name: proxy-from-k8s-to-mockbin-kongingress
 upstream:
   hash_on: none
   hash_fallback: none
